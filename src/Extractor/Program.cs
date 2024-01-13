@@ -12,7 +12,7 @@ class Program
     static async Task Main(string[] args)
     {
         // Display the number of command line arguments.
-        Console.WriteLine(args.Length);
+        //Console.WriteLine(args.Length);
 
         await Get_ApiManagementGetApiContract();
     }
@@ -37,8 +37,17 @@ class Program
             ApiManagementServiceResource apiManagementService = client.GetApiManagementServiceResource(apiManagementServiceResourceId);
 
             // get the collection of this ApiResource
-            ApiCollection collection = apiManagementService.GetApis();
+            var collection = apiManagementService.GetApis();
 
+
+            //System.Console.WriteLine( apiResource.Id);
+
+            // var operations = apiResource.GetApiOperations();
+
+            // foreach (var operation in operations)
+            // {
+            //     System.Console.WriteLine(operation.Id);
+            // }
             // invoke the operation and iterate over the result
             await foreach (ApiResource item in collection.GetAllAsync())
             {
@@ -46,18 +55,35 @@ class Program
                 // but just for demo, we get its data from this resource instance
                 ApiData resourceData = item.Data;
 
-                var apiOperations = item.GetApiOperations();
-
-                foreach (var op in apiOperations)
-                {
-                    System.Console.WriteLine((op.GetAsync()).Result);
-                }
-
                 System.Console.WriteLine(resourceData.Name);
-                System.Console.WriteLine(resourceData.Path);
 
                 // for demo we just print out the id
                 Console.WriteLine($"Succeeded on id: {resourceData.Id}");
+
+                var operations = item.GetApiOperations();
+                foreach (var operation in operations)
+                {
+                    System.Console.WriteLine(operation.Id);
+
+                    var operationPolicies = operation.GetApiOperationPolicies();
+                    
+                    foreach (var policy in operationPolicies)
+                    {
+                        System.Console.WriteLine(policy.Data.Value);
+                    }
+                }
+
+                var products = item.GetApiProducts();
+
+                foreach (var product in products)
+                {
+                    var productPolicies = product.GetApiManagementProductPolicies();
+
+                    foreach (var productPolicy in productPolicies)
+                    {
+                        System.Console.WriteLine(productPolicy.Data.Value);
+                    }
+                }
             }
 
             Console.WriteLine($"Succeeded");
