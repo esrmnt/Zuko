@@ -77,12 +77,12 @@ class Program
 
                 foreach (var product in products)
                 {
-                    var productPolicies = product.GetApiManagementProductPolicies();
+                    System.Console.WriteLine( product.Id);
+                    System.Console.WriteLine(   product.HasData);
+                    //var productPolicies = product.GetApiManagementProductPolicies();
+                    var productPolicies = product.Get();
 
-                    foreach (var productPolicy in productPolicies)
-                    {
-                        System.Console.WriteLine(productPolicy.Data.Value);
-                    }
+                    System.Console.WriteLine(   productPolicies.Value);
                 }
             }
 
