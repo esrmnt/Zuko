@@ -20,6 +20,8 @@ class Program
 
     public static async Task Get_ApiManagementGetApiContract()
         {
+
+            ResourceIdentifier prodId = null;
             // Generated from example definition: specification/apimanagement/resource-manager/Microsoft.ApiManagement/stable/2021-08-01/examples/ApiManagementGetApiContract.json
             // this example is just showing the usage of "Api_Get" operation, for the dependent resources, they will have to be created separately.
 
@@ -31,8 +33,8 @@ class Program
             // this example assumes you already have this ApiManagementServiceResource created on azure
             // for more information of creating ApiManagementServiceResource, please refer to the document of ApiManagementServiceResource
             string subscriptionId = "b4a9bb8e-85e1-4f6f-a776-06a30b6944ea";
-            string resourceGroupName = "esrmnt-rg-si";
-            string serviceName = "esrmnt-cons-apim-si";
+            string resourceGroupName = "esrmnt-ws-rg";
+            string serviceName = "esrmnt-apim-dev";
             ResourceIdentifier apiManagementServiceResourceId = ApiManagementServiceResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, serviceName);
             ApiManagementServiceResource apiManagementService = client.GetApiManagementServiceResource(apiManagementServiceResourceId);
 
@@ -77,14 +79,34 @@ class Program
 
                 foreach (var product in products)
                 {
+                    prodId = product.Id;
                     System.Console.WriteLine( product.Id);
                     System.Console.WriteLine(   product.HasData);
                     //var productPolicies = product.GetApiManagementProductPolicies();
-                    var productPolicies = product.Get();
+                    var productPolicies = product.Data;
 
-                    System.Console.WriteLine(   productPolicies.Value);
+                    System.Console.WriteLine(   productPolicies.Name + "---" );
+
+
+
+                    
                 }
+
+
             }
+
+//  var apimClient = new ApiManagementClient(subscriptionId, credential);
+            // Get product policy
+        var productPolicy = apiManagementService.GetApiManagementProduct(prodId.Name);
+
+        // Display policy
+        Console.WriteLine($"Policy applied to product {prodId} associated with API :");
+        Console.WriteLine(productPolicy.Value.Data);
+
+        foreach (var item in productPolicy.Value.GetApiManagementProductPolicies())
+        {
+            System.Console.WriteLine(item.Data.Value);
+        } 
 
             Console.WriteLine($"Succeeded");
 
